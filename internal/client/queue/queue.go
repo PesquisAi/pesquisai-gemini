@@ -17,7 +17,7 @@ func (q queue) Publish(ctx context.Context, b []byte) (err error) {
 }
 
 func (q queue) Connect(name string) (err error) {
-	q.queue = rabbitmq.NewQueue(q.connection, name, rabbitmq.CONTENT_TYPE_JSON, properties.CreateQueueIfNX())
+	q.queue = rabbitmq.NewQueue(q.connection, name, rabbitmq.CONTENT_TYPE_JSON, properties.GetCreateQueueIfNX())
 	return q.queue.Connect()
 }
 

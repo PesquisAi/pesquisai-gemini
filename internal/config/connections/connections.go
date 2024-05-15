@@ -8,10 +8,10 @@ import (
 func Connect(deps *injector.Dependencies) error {
 
 	err := deps.QueueConnection.Connect(
-		properties.QueueConnectionUser(),
-		properties.QueueConnectionPassword(),
-		properties.QueueConnectionHost(),
-		properties.QueueConnectionPort(),
+		properties.GetQueueConnectionUser(),
+		properties.GetQueueConnectionPassword(),
+		properties.GetQueueConnectionHost(),
+		properties.GetQueueConnectionPort(),
 	)
 	if err != nil {
 		return err

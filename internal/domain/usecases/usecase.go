@@ -8,6 +8,8 @@ import (
 )
 
 type UseCase struct {
+	queue  interfaces.Queue
+	gemini interfaces.Gemini
 }
 
 func (u UseCase) Execute(ctx context.Context, request models.GeminiRequest) error {
@@ -19,6 +21,8 @@ func (u UseCase) Execute(ctx context.Context, request models.GeminiRequest) erro
 	return nil
 }
 
-func NewUseCase() interfaces.UseCase {
-	return &UseCase{}
+func NewUseCase(queue interfaces.Queue, gemini interfaces.Gemini) interfaces.UseCase {
+	return &UseCase{
+		queue: queue, gemini: gemini,
+	}
 }
