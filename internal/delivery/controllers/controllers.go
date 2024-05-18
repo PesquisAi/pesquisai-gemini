@@ -18,7 +18,7 @@ type controller struct {
 	useCase interfaces.UseCase
 }
 
-func (c controller) errorHandler(err error) {
+func (c controller) errorHandler(err error) error {
 	exception := &exceptions.Error{}
 	if !errors.As(err, &exception) {
 		exception = errortypes.NewUnknownException(err.Error())
@@ -28,30 +28,41 @@ func (c controller) errorHandler(err error) {
 	slog.Error("controller.errorHandler",
 		slog.String("details", "process error"),
 		slog.String("errorType", string(b)))
+
+	if exception.Abort {
+		return nil
+	}
+
+	return exception
 }
 
 func (c controller) def() {
-
+	if r := recover(); r != nil {
+		slog.Error("controller.def", "error", r)
+		return
+	}
 }
 
-func (c controller) GeminiHandler(delivery amqp.Delivery) {
+func (c controller) GeminiHandler(delivery amqp.Delivery) error {
 	defer c.def()
+	ctx := context.Background()
 	slog.Info("controller.GeminiHandler",
 		slog.String("details", "process started"),
 		slog.String("messageId", delivery.MessageId),
+		slog.String("message", string(delivery.Body)),
 		slog.String("userId", delivery.UserId))
 
 	var request dtos.GeminiRequest
 	err := parser.ParseDeliveryJSON(&request, delivery)
 	if err != nil {
-		c.errorHandler(err)
-		return
+		return c.errorHandler(err)
+
 	}
 
 	err = validations.ValidateRequest(&request)
 	if err != nil {
-		c.errorHandler(err)
-		return
+		return c.errorHandler(err)
+
 	}
 
 	requestModel := models.GeminiRequest{
@@ -62,19 +73,14 @@ func (c controller) GeminiHandler(delivery amqp.Delivery) {
 		Forward:     request.Forward,
 	}
 
-	err = c.useCase.Execute(context.Background(), requestModel)
+	err = c.useCase.Execute(ctx, requestModel)
 	if err != nil {
-		c.errorHandler(err)
-		return
+		return c.errorHandler(err)
 	}
 
 	slog.Info("controller.GeminiHandler",
 		slog.String("details", "process finished"))
-	err = delivery.Ack(false)
-	if err != nil {
-		c.errorHandler(err)
-		return
-	}
+	return nil
 }
 
 func NewController(useCase interfaces.UseCase) interfaces.Controller {

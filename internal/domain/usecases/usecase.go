@@ -2,19 +2,32 @@ package usecases
 
 import (
 	"context"
+	"github.com/PesquisAi/pesquisai-gemini/internal/domain/builder"
 	"github.com/PesquisAi/pesquisai-gemini/internal/domain/interfaces"
 	"github.com/PesquisAi/pesquisai-gemini/internal/domain/models"
 	"log/slog"
 )
 
-type UseCase struct {
+type useCase struct {
 	queue  interfaces.Queue
 	gemini interfaces.Gemini
 }
 
-func (u UseCase) Execute(ctx context.Context, request models.GeminiRequest) error {
+func (u useCase) Execute(ctx context.Context, request models.GeminiRequest) error {
 	slog.InfoContext(ctx, "useCase.Orchestrate",
 		slog.String("details", "process started"))
+
+	res, err := u.gemini.Ask(ctx, request.Question)
+	if err != nil {
+		return err
+	}
+
+	b := builder.BuildOutputQueueMessage(request, *res)
+
+	err = u.queue.Publish(ctx, request.OutputQueue, b)
+	if err != nil {
+		return err
+	}
 
 	slog.DebugContext(ctx, "useCase.Orchestrate",
 		slog.String("details", "process finished"))
@@ -22,7 +35,7 @@ func (u UseCase) Execute(ctx context.Context, request models.GeminiRequest) erro
 }
 
 func NewUseCase(queue interfaces.Queue, gemini interfaces.Gemini) interfaces.UseCase {
-	return &UseCase{
+	return &useCase{
 		queue: queue, gemini: gemini,
 	}
 }

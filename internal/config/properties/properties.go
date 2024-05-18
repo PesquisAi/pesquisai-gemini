@@ -1,6 +1,9 @@
 package properties
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 const (
 	QueueNameGemini = "gemini"
@@ -27,6 +30,6 @@ func GetQueueConnectionPassword() string {
 	return os.Getenv("QUEUE_CONNECTION_PASSWORD")
 }
 
-func GetGeminiApiKey() string {
-	return os.Getenv("GEMINI_API_KEY")
+func GetGeminiApiKeys() []string {
+	return strings.Split(os.Getenv("GEMINI_API_KEYS_COMMA_SEPARATED"), ",")
 }

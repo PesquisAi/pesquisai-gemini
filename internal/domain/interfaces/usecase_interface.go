@@ -6,5 +6,5 @@ import (
 )
 
 type UseCase interface {
-	Execute(ctx context.Context, request models.AiOrchestratorRequest) error
+	Execute(ctx context.Context, request models.GeminiRequest) error
 }

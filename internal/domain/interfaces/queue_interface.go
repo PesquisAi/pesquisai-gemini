@@ -5,6 +5,5 @@ import (
 )
 
 type Queue interface {
-	Publish(ctx context.Context, b []byte) (err error)
-	Connect(name string) (err error)
+	Publish(ctx context.Context, name string, b []byte) (err error)
 }

@@ -3,6 +3,7 @@ package gemini
 import (
 	"context"
 	"fmt"
+	"github.com/PesquisAi/pesquisai-gemini/internal/config/errortypes"
 	"github.com/PesquisAi/pesquisai-gemini/internal/config/properties"
 	"github.com/PesquisAi/pesquisai-gemini/internal/domain/interfaces"
 	"github.com/google/generative-ai-go/genai"
@@ -27,6 +28,7 @@ func (g gemini) Ask(ctx context.Context, input string) (result *string, err erro
 	}
 	if err != nil {
 		slog.Error("Error during gemini request", "error", err.Error())
+		err = errortypes.NewGeminiError(err.Error())
 		return nil, err
 	}
 
