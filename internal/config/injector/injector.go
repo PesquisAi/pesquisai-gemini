@@ -36,12 +36,12 @@ func (d *Dependencies) Inject() *Dependencies {
 		keys := properties.GetGeminiApiKeys()
 		clients := make([]*genai.Client, len(keys))
 
-		for _, key := range keys {
+		for i, key := range keys {
 			client, err := genai.NewClient(context.Background(), option.WithAPIKey(key))
 			if err != nil {
 				panic(err)
 			}
-			clients = append(clients, client)
+			clients[i] = client
 		}
 
 		d.Gemini = gemini.NewGemini(clients...)
@@ -56,7 +56,7 @@ func (d *Dependencies) Inject() *Dependencies {
 			d.QueueConnection,
 			properties.QueueNameGemini,
 			rabbitmq.ContentTypeJson,
-			properties.GetCreateQueueIfNX(), false, false)
+			properties.GetCreateQueueIfNX(), true, true)
 	}
 
 	if d.Controller == nil {
