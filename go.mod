@@ -4,7 +4,7 @@ go 1.22.2
 
 require (
 	github.com/PesquisAi/pesquisai-errors-lib v0.1.0
-	github.com/PesquisAi/pesquisai-rabbitmq-lib v0.2.1
+	github.com/PesquisAi/pesquisai-rabbitmq-lib v0.2.2
 	github.com/go-playground/validator/v10 v10.20.0
 	github.com/google/generative-ai-go v0.12.0
 	github.com/joho/godotenv v1.5.1
