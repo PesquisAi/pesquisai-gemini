@@ -14,7 +14,7 @@ type useCase struct {
 }
 
 func (u useCase) Execute(ctx context.Context, request models.GeminiRequest) error {
-	slog.InfoContext(ctx, "useCase.Orchestrate",
+	slog.InfoContext(ctx, "useCase.Execute",
 		slog.String("details", "process started"))
 
 	res, err := u.gemini.Ask(ctx, request.Question)
@@ -29,7 +29,7 @@ func (u useCase) Execute(ctx context.Context, request models.GeminiRequest) erro
 		return err
 	}
 
-	slog.DebugContext(ctx, "useCase.Orchestrate",
+	slog.DebugContext(ctx, "useCase.Execute",
 		slog.String("details", "process finished"))
 	return nil
 }
